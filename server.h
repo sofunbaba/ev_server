@@ -20,7 +20,7 @@
                                             printf("\033[1m\033[31;40m"); \
                                         printf("[%s] "fmt, #level, ##__VA_ARGS__); \
                                         if(level == E_DEBUG) \
-                                            printf("%10s[%s:%d] ", "-->", __func__, __LINE__); \
+                                            printf("%10s[%s:%s:%d] ", "-->", __FILE__,__func__, __LINE__); \
                                         printf("\033[0m\r\n"); \
                                     } \
                                 }while(0)
@@ -55,6 +55,10 @@ struct event_base *list_event_base_new();
  */
 void list_event_loopexit();
 
+/*
+ * delete a event_base from the global list
+ */
+void list_event_base_free(struct list_head *list, struct event_base *base);
 
 
 
