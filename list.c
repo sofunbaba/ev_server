@@ -1,9 +1,23 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 #include "list.h"
+
+void list_head_init(struct list_head *list)
+{
+    assert(list != NULL);
+
+    list->head   = NULL;
+    list->tail   = NULL;
+    list->length = 0;
+
+    pthread_mutex_init(&list->lock, NULL);
+}
 
 void list_add(struct list_head *list, void *data)
 {
+    pthread_mutex_lock(&list->lock);
+
     list_node_t *new = (list_node_t *)malloc(sizeof(list_node_t));
 
     new->private_data = data;
@@ -20,12 +34,16 @@ void list_add(struct list_head *list, void *data)
 
     list->tail = new;
     list->length++;
+
+    pthread_mutex_unlock(&list->lock);
 }
 
 void list_del(struct list_head *list, list_node_t *node)
 {
-   if(node == list->head)
-   {
+    pthread_mutex_lock(&list->lock);
+
+    if(node == list->head)
+    {
        if(node == list->tail)
        {
            list->head = NULL;
@@ -54,6 +72,8 @@ void list_del(struct list_head *list, list_node_t *node)
 
    list->length--;
    free(node);
+
+   pthread_mutex_unlock(&list->lock);
 }
 
 void list_clear(struct list_head *list)

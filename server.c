@@ -114,6 +114,11 @@ int main(int argc, char *argv[])
 
     ev_uint16_t port = DEFAULT_SERVER_PORT;
 
+    /*
+     * init the list
+     */
+    list_head_init(&gl_event_base);
+
     if(argc == 2)
         port = atoi(argv[1]);
 
