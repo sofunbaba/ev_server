@@ -1,4 +1,4 @@
-TARGET=server
+TARGET=multi_cgminer_server
 SRC=$(wildcard *.c)
 
 CROSS_COMPILE ?=
