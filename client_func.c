@@ -24,7 +24,7 @@
 void client_read_cb(evutil_socket_t fd, short what, void *arg)
 {
     int len=0;
-    char buff[100];
+    char buff[106];
     struct event_base *base = arg;
 
     len = read(fd, buff, sizeof(buff));

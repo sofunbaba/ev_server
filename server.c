@@ -56,7 +56,7 @@ static void sigint_cb(evutil_socket_t signal, short event, void *args)
 {
     struct event_base *base = (struct event_base *)args;
 
-    log_msg(E_INFO, "Catch the SIGINT signal.");
+    log_msg(E_INFO, "Catch the signal (%d).", signal);
 
     list_event_loopexit();
 }
@@ -107,6 +107,7 @@ int main(int argc, char *argv[])
 {
     struct event_base *base = NULL;
     struct event *e_sigint = NULL;
+    struct event *e_sigusr1 = NULL;
     struct evconnlistener *listener = NULL;
     struct sockaddr_in sin;
 
@@ -139,9 +140,17 @@ int main(int argc, char *argv[])
 
     evconnlistener_set_error_cb(listener, accept_error_cb);
 
-    //catch the SIGINT signal to clean memory
+    /*
+     * catch the SIGINT signal to clean memory
+     */
     e_sigint = event_new(base, SIGINT, EV_SIGNAL, sigint_cb, (void *)base);
     event_add(e_sigint, NULL);
+
+    /*
+     * add the SIGUSR1 signal for kill cmd
+     */
+    e_sigusr1 = event_new(base, SIGUSR1, EV_SIGNAL, sigint_cb, (void *)base);
+    event_add(e_sigusr1, NULL);
 
     log_msg(E_INFO, "Server is running...");
 
@@ -151,6 +160,7 @@ int main(int argc, char *argv[])
 
     evconnlistener_free(listener);
     event_free(e_sigint);
+    event_free(e_sigusr1);
     event_base_free(base);
     libevent_global_shutdown();
 
