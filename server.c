@@ -9,6 +9,7 @@
 #include <arpa/inet.h>
 #include "server.h"
 #include "list.h"
+#include <event2/thread.h>
 #include "client_func.h"
 
 /*
@@ -124,6 +125,7 @@ int main(int argc, char *argv[])
 
     log_msg(E_INFO, "Server port: %d", port);
 
+    evthread_use_pthreads();
     base = list_event_base_new();
 
     memset(&sin, 0, sizeof(sin));
