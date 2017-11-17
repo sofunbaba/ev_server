@@ -65,7 +65,7 @@ void client_read_cb(struct bufferevent *bev, void *arg)
 void client_error_cb(struct bufferevent *bev, short what, void *arg)
 {
     struct event_base *base = bufferevent_get_base(bev);
-    evutil_socket_t fd = bufferevent_getfd(bev);
+    evutil_socket_t fd      = bufferevent_getfd(bev);
 
     if(what & BEV_EVENT_EOF)
         log_msg(E_DEBUG, "Client:%d exit.", fd);
