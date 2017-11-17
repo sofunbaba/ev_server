@@ -6,8 +6,8 @@
 #define DEFAULT_CLIENT_CHANNELS 6
 #define DEFAULT_CLIENT_CHIPS    96
 
-//pkg(53) + channel(1) + \r\n(2)
-#define DEFAULT_TASK_LEN 110
+#define DEFAULT_TASK_LEN 54
+#define DEFAULT_TASK_HEAD 0x5a
 
 
 extern struct evbuffer *gl_client_out_buff[DEFAULT_CLIENT_CHANNELS][DEFAULT_CLIENT_CHIPS];

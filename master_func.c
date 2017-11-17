@@ -13,13 +13,18 @@
 struct evbuffer *master_read_buff;
 struct evbuffer *master_write_buff;
 
+/*
+ * read task from master read buff which cgminers sendto,
+ * and transport the task to fpga.
+ */
 static void *master_read_func(void *arg)
 {
     size_t len = 0;
     char *task = NULL;
-    char *task_str = NULL;
+    char *task_str = NULL, *task_hex = NULL;
+    ev_uint8_t channel = 0, chip = 0;
 
-    log_msg(E_DEBUG, "Create master read thread.");
+    log_msg(E_INFO, "Create master read thread.");
 
     master_read_buff = evbuffer_new();
     evbuffer_enable_locking(master_read_buff, NULL);
@@ -29,14 +34,23 @@ static void *master_read_func(void *arg)
         task = evbuffer_readln(master_read_buff, &len, EVBUFFER_EOL_ANY);
         if(len > 0)
         {
-            printf("master read len:%lu\r\n", len);
-            if(len == (DEFAULT_TASK_LEN/2-2))
+            log_msg(E_DEBUG, "Master read len:%lu", len);
+
+            if(len == DEFAULT_TASK_LEN)
             {
-                task_str = bin2hex(task, len);
+                channel = task[1];
+                chip    = task[2];
+                task[1] = task[0];
 
-                printf("%s\r\n", task_str);
+                task_hex = &task[1];
 
+                log_msg(E_DEBUG, "channel:%d, chip:%d", channel, chip);
+
+                task_str = bin2hex(task_hex, len-1);
+                log_msg(E_DEBUG, "task:%s", task_str);
                 free(task_str);
+
+                evbuffer_add(gl_client_out_buff[channel][chip], task_hex, len-1);
             }
             free(task);
         }
@@ -51,26 +65,25 @@ static void *master_write_func(void *arg)
     }
 }
 
-
 void master_thread_init()
 {
-    pthread_t pt[2];
+    pthread_t pt;
     int ret = 0;
 
-    ret = pthread_create(&pt[0], NULL, master_read_func, NULL);
+    ret = pthread_create(&pt, NULL, master_read_func, NULL);
     if(ret)
     {
         log_msg(E_ERROR, "Create thread master read error.");
         list_event_loopexit();
     }
 
-    ret = pthread_create(&pt[1], NULL, master_write_func, NULL);
+    ret = pthread_create(&pt, NULL, master_write_func, NULL);
     if(ret)
     {
         log_msg(E_ERROR, "Create thread master write error.");
         list_event_loopexit();
     }
 
-    log_msg(E_DEBUG, "Create master thread success.");
+    log_msg(E_INFO, "Create master thread success.");
 }
 

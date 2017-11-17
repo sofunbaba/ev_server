@@ -37,8 +37,8 @@ static void accept_error_cb(struct evconnlistener *listener, void *args)
 static void accept_conn_cb(struct evconnlistener *listener, evutil_socket_t fd, struct sockaddr * sock, int socklen, void *args)
 {
     ev_int8_t ret = 0;
-    pthread_t pt = 0;
-    struct sockaddr_in *sin = (struct sockaddr_in *)sock;
+    pthread_t pt  = 0;
+    struct sockaddr_in *sin    = (struct sockaddr_in *)sock;
     evutil_socket_t *client_fd = NULL;
 
     log_msg(E_DEBUG, "Accept fd:%d. client:%s:%d", fd, inet_ntoa(sin->sin_addr), sin->sin_port);
@@ -79,7 +79,6 @@ void list_event_loopexit()
     log_msg(E_DEBUG, "Free all memory and list.");
 }
 
-
 /*
  * alloc a new event_base, and recorded with the global list.
  */
@@ -102,6 +101,8 @@ void list_event_base_free(struct list_head *list, struct event_base *base)
     for(np=gl_event_base.head; np; np=np->next)
         if(np->private_data == base)
             list_del(&gl_event_base, np);
+
+    event_base_free(base);
 
     log_msg(E_DEBUG, "Delete a evnet base.(remain:%d)", gl_event_base.length);
 }
@@ -130,7 +131,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    log_msg(E_INFO, "Server port: %d", port);
+    log_msg(E_INFO, "The server port: %d", port);
 
     master_thread_init();
 
@@ -177,10 +178,4 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-
-
-
-
-
-
 

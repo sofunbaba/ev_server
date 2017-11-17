@@ -11,8 +11,6 @@
 #include "master_func.h"
 #include "util.h"
 
-#define hex_to_str_len(str_len) (str_len*2)
-
 /*
  * storge all the client output buffer
  */
@@ -20,49 +18,46 @@ struct evbuffer *gl_client_out_buff[DEFAULT_CLIENT_CHANNELS][DEFAULT_CLIENT_CHIP
 
 /*
  * read task from the client,
- * and transport the task to the master read queue buff.
+ * and send the task to the master read buff.
  *
  */
 void client_read_cb(struct bufferevent *bev, void *arg)
 {
     ev_uint8_t ret = 0;
-    char *task = NULL;
+    char *task = NULL, *task_p = NULL;
     size_t len = 0;
-    char task_hex[DEFAULT_TASK_LEN]; //has to add \r\n or \n or \0 to the tail
-    ev_uint8_t channel=0, chip=0;
+    ev_uint8_t channel = 0, chip = 0;
     struct evbuffer *input  = bufferevent_get_input(bev);
     struct evbuffer *output = bufferevent_get_output(bev);
     evutil_socket_t fd      = bufferevent_getfd(bev);
 
-
+    /*
+     * read task that end with '\r\n' or '\r' or '\n'
+     */
     task = evbuffer_readln(input, &len, EVBUFFER_EOL_ANY);
     if(len > 0)
     {
-        if(len == (DEFAULT_TASK_LEN-2))
+        log_msg(E_DEBUG, "Client:%d got a message, len:%lu", fd, len);
+
+        if(len == DEFAULT_TASK_LEN)
         {
-            log_msg(E_DEBUG, "Client:%d got a message:%s", fd, task);
-
-            memset(task_hex, 0, sizeof(task_hex));
-            ret = hex2bin(task_hex, task, len/2);
-            if(!ret)
+            if(task[0] == DEFAULT_TASK_HEAD)
             {
-                log_msg(E_ERROR, "convert str to hex error.");
-                return;
-            }
+                channel = task[1];
+                chip    = task[2];
 
-            if(task_hex[0] == 0x5a)
-            {
-                channel = task_hex[1];
-                chip    = task_hex[2];
                 gl_client_out_buff[channel][chip] = output;
 
-                task_hex[1] = task_hex[0];
+                log_msg(E_DEBUG, "channel:%d, chip:%d", channel, chip);
 
-                task_hex[len/2] = '\n';
+                task_p = bin2hex(task, len);
+                log_msg(E_DEBUG, "recv:%s", task_p);
+                free(task_p);
 
-                evbuffer_add(master_read_buff, &task_hex[1], len/2+1);
+                evbuffer_add_printf(master_read_buff, "%s\r\n", task);
             }
         }
+
         free(task);
     }
 }
@@ -73,10 +68,11 @@ void client_error_cb(struct bufferevent *bev, short what, void *arg)
     evutil_socket_t fd = bufferevent_getfd(bev);
 
     if(what & BEV_EVENT_EOF)
-        log_msg(E_DEBUG, "client:%d exit.", fd);
+        log_msg(E_DEBUG, "Client:%d exit.", fd);
     else if(what & BEV_EVENT_ERROR)
-        log_msg(E_ERROR, "client:%d got a error.", fd);
+        log_msg(E_ERROR, "Client:%d got a error.", fd);
 
+    bufferevent_free(bev);
     event_base_loopexit(base, NULL);
 }
 
@@ -91,16 +87,15 @@ void *client_func(void *arg)
 
     base = list_event_base_new();
 
-    bev = bufferevent_socket_new(base, fd, LEV_OPT_CLOSE_ON_FREE);
+    bev = bufferevent_socket_new(base, fd, BEV_OPT_CLOSE_ON_FREE);
     bufferevent_setcb(bev, client_read_cb, NULL, client_error_cb, NULL);
     bufferevent_enable(bev, EV_READ);
 
     event_base_dispatch(base);
 
-    log_msg(E_DEBUG, "thread client fd:%d exit!", fd);
+    log_msg(E_DEBUG, "Thread client fd:%d exit!", fd);
 
     free(arg);
-    bufferevent_free(bev);
     list_event_base_free(&gl_event_base, base);
 }
 
