@@ -48,11 +48,12 @@ void client_error_cb(struct bufferevent *bev, short what, void *arg)
 {
     struct event_base *base = bufferevent_get_base(bev);
     evutil_socket_t fd = bufferevent_getfd(bev);
+    int err = EVUTIL_SOCKET_ERROR();
 
     if(what & BEV_EVENT_EOF)
         log_msg(E_DEBUG, "Client:%d exit.", fd);
     else if(what & BEV_EVENT_ERROR)
-        log_msg(E_ERROR, "Client:%d got a error.", fd);
+        log_msg(E_ERROR, "Client:%d got a error(%s).", fd, evutil_socket_error_to_string(err));
 
     bufferevent_free(bev);
     event_base_loopexit(base, NULL);
