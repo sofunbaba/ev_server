@@ -7,6 +7,8 @@
 
 #include "server.h"
 #include "master_func.h"
+#include "client_func.h"
+#include "util.h"
 
 struct evbuffer *master_read_buff;
 struct evbuffer *master_write_buff;
@@ -15,6 +17,7 @@ static void *master_read_func(void *arg)
 {
     size_t len = 0;
     char *task = NULL;
+    char *task_str = NULL;
 
     log_msg(E_DEBUG, "Create master read thread.");
 
@@ -23,13 +26,18 @@ static void *master_read_func(void *arg)
 
     while(1)
     {
-        task = evbuffer_readln(master_read_buff, &len, EVBUFFER_EOL_CRLF_STRICT);
-
+        task = evbuffer_readln(master_read_buff, &len, EVBUFFER_EOL_ANY);
         if(len > 0)
         {
             printf("master read len:%lu\r\n", len);
-            printf("%s\r\n", task);
+            if(len == (DEFAULT_TASK_LEN/2-2))
+            {
+                task_str = bin2hex(task, len);
 
+                printf("%s\r\n", task_str);
+
+                free(task_str);
+            }
             free(task);
         }
     }
@@ -65,17 +73,4 @@ void master_thread_init()
 
     log_msg(E_DEBUG, "Create master thread success.");
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
