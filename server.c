@@ -56,8 +56,6 @@ static void accept_conn_cb(struct evconnlistener *listener, evutil_socket_t fd, 
 
 static void sigint_cb(evutil_socket_t signal, short event, void *args)
 {
-    struct event_base *base = (struct event_base *)args;
-
     log_msg(E_INFO, "Catch the signal (%d).", signal);
 
     list_event_loopexit();
@@ -108,11 +106,11 @@ void list_event_base_free(struct list_head *list, struct event_base *base)
 
 int main(int argc, char *argv[])
 {
-    struct event_base *base = NULL;
-    struct event *e_sigint = NULL;
-    struct event *e_sigusr1 = NULL;
-    struct evconnlistener *listener = NULL;
-    struct sockaddr_in sin;
+    struct event_base     *base      = NULL;
+    struct event          *e_sigint  = NULL;
+    struct event          *e_sigusr1 = NULL;
+    struct evconnlistener *listener  = NULL;
+    struct sockaddr_in    sin;
 
     ev_uint16_t port = DEFAULT_SERVER_PORT;
 
@@ -152,13 +150,13 @@ int main(int argc, char *argv[])
     /*
      * catch the SIGINT signal to clean memory
      */
-    e_sigint = event_new(base, SIGINT, EV_SIGNAL, sigint_cb, (void *)base);
+    e_sigint = event_new(base, SIGINT, EV_SIGNAL, sigint_cb, NULL);
     event_add(e_sigint, NULL);
 
     /*
      * add the SIGUSR1 signal for kill cmd
      */
-    e_sigusr1 = event_new(base, SIGUSR1, EV_SIGNAL, sigint_cb, (void *)base);
+    e_sigusr1 = event_new(base, SIGUSR1, EV_SIGNAL, sigint_cb, NULL);
     event_add(e_sigusr1, NULL);
 
     log_msg(E_INFO, "Server is running...");
