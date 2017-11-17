@@ -3,6 +3,7 @@
 
 #include <pthread.h>
 
+#define list_is_empty(list) (!list->head)
 
 typedef struct _list_node{
     void *private_data;

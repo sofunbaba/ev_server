@@ -20,7 +20,7 @@
                                             printf("\033[1m\033[31;40m"); \
                                         printf("[%s] "fmt, #level, ##__VA_ARGS__); \
                                         if(level == E_DEBUG) \
-                                            printf("%10s[%s:%s:%d] ", "-->", __FILE__,__func__, __LINE__); \
+                                            printf("%10s[%s: %s: %d] ", "--> ", __FILE__,__func__, __LINE__); \
                                         printf("\033[0m\r\n"); \
                                     } \
                                 }while(0)
@@ -32,6 +32,7 @@ typedef enum {
     E_ERROR,
     E_INFO,
     E_DEBUG,
+    E_ALL,
 }DEBUG_LEVEL_E;
 
 

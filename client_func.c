@@ -5,8 +5,10 @@
 #include <event2/util.h>
 #include <event2/buffer.h>
 #include <event2/bufferevent.h>
-#include "server.h"
 
+#include "server.h"
+#include "client_func.h"
+#include "master_func.h"
 
 void client_read_cb(struct bufferevent *bev, void *arg)
 {
@@ -14,9 +16,9 @@ void client_read_cb(struct bufferevent *bev, void *arg)
     struct evbuffer *output = bufferevent_get_output(bev);
     evutil_socket_t fd = bufferevent_getfd(bev);
 
-    log_msg(E_DEBUG, "client:%d got a message.", fd);
+    log_msg(E_ALL, "client:%d got a message.", fd);
 
-    evbuffer_add_buffer(output, input);
+    evbuffer_add_buffer(master_read_buff, input);
 }
 
 void client_error_cb(struct bufferevent *bev, short what, void *arg)

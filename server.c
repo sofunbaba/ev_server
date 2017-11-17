@@ -7,10 +7,12 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <event2/thread.h>
+
 #include "server.h"
 #include "list.h"
-#include <event2/thread.h>
 #include "client_func.h"
+#include "master_func.h"
 
 /*
  * the global debug level flag.
@@ -129,6 +131,8 @@ int main(int argc, char *argv[])
     }
 
     log_msg(E_INFO, "Server port: %d", port);
+
+    master_thread_init();
 
     evthread_use_pthreads();
     base = list_event_base_new();
