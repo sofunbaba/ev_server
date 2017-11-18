@@ -1,4 +1,4 @@
-TARGET=server
+TARGET=evServer
 SRC=$(wildcard *.c)
 
 CROSS_COMPILE ?=
@@ -6,7 +6,7 @@ CROSS_COMPILE ?=
 CC = $(CROSS_COMPILE)gcc
 STRIP = $(CROSS_COMPILE)strip
 
-CFLAGS=
+CFLAGS=-Wall
 LDFLAGS=-L/usr/lib
 LIBS=-levent -levent_pthreads -lpthread
 
