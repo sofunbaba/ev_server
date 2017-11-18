@@ -58,11 +58,6 @@ static void sigint_cb(evutil_socket_t signal, short event, void *args)
     log_msg(E_INFO, "Catch the signal (%d).", signal);
 
     /*
-     * other base loop exit.
-     */
-    list_client_loopexit();
-
-    /*
      * main base loop exit.
      */
     event_base_loopexit(main_base, NULL);
@@ -88,21 +83,15 @@ void list_client_loopexit()
     list_node_t *np = NULL;
     struct client_info *cinfo = NULL;
 
+    pthread_mutex_lock(&gl_client_info.lock);
     for(np=gl_client_info.head; np; np=np->next)
     {
         cinfo = np->private_data;
         event_base_loopexit(cinfo->base, NULL);
     }
+    pthread_mutex_unlock(&gl_client_info.lock);
 
-    for(np=gl_client_info.head; np; np=np->next)
-    {
-        cinfo = np->private_data;
-        pthread_join(cinfo->pt, NULL);
-    }
-
-    list_clear(&gl_client_info);
-
-    log_msg(E_DEBUG, "Free all memory and list.");
+    log_msg(E_DEBUG, "Notify all the base loop exit.");
 }
 
 int main(int argc, char *argv[])
@@ -113,6 +102,7 @@ int main(int argc, char *argv[])
     struct event          *e_update  = NULL;
     struct evconnlistener *listener  = NULL;
     struct sockaddr_in    sin;
+    struct client_info *cinfo = NULL;
 
     struct timeval tv = DEFAULT_UPDATE_TIME;
 
@@ -173,7 +163,6 @@ int main(int argc, char *argv[])
 
     event_base_dispatch(base);
 
-    log_msg(E_INFO, "Server is shutting down...");
 
     evconnlistener_free(listener);
     event_free(e_sigint);
@@ -181,6 +170,22 @@ int main(int argc, char *argv[])
     event_free(e_update);
 
     event_base_free(base);
+
+    /*
+     * notify other base loop exit.
+     */
+    list_client_loopexit();
+
+    /*
+     * wait for all thread exit.
+     */
+    while(gl_client_info.head)
+    {
+        cinfo = gl_client_info.head->private_data;
+        pthread_join(cinfo->pt, NULL);
+    }
+
+    log_msg(E_INFO, "Server is shutting down...");
     libevent_global_shutdown();
 
     return 0;

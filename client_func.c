@@ -91,16 +91,22 @@ void list_client_info_free(struct client_info *cinfo)
 {
     list_node_t *np = NULL;
 
+    pthread_mutex_lock(&gl_client_info.lock);
     for(np=gl_client_info.head; np; np=np->next)
         if(np->private_data == cinfo)
             list_del(&gl_client_info, np);
+    pthread_mutex_unlock(&gl_client_info.lock);
 
     log_msg(E_DEBUG, "Delete a client.(remain:%d)", gl_client_info.length);
 }
 
 void list_client_info_add(struct client_info *cinfo)
 {
+    pthread_mutex_lock(&gl_client_info.lock);
+
     list_add(&gl_client_info, cinfo);
+
+    pthread_mutex_unlock(&gl_client_info.lock);
 }
 
 void *client_func(void *arg)
