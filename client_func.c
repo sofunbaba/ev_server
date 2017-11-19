@@ -127,11 +127,6 @@ void *client_func(void *arg)
     memset(cinfo->client_name, 0, sizeof(cinfo->client_name));
     cinfo->uptime = 0;
 
-    /*
-     * add the client info to the list.
-     */
-    list_client_info_add(cinfo);
-
     event_base_dispatch(cinfo->base);
 
     log_msg(E_DEBUG, "Thread client fd:%d exit!", cinfo->fd);

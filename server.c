@@ -41,12 +41,22 @@ static void accept_conn_cb(struct evconnlistener *listener, evutil_socket_t fd, 
     memcpy((ev_uint8_t *)&cinfo->sin, (ev_uint8_t *)sock, sizeof(struct sockaddr_in));
 
     ret = pthread_create(&cinfo->pt, NULL, client_func, (void *)cinfo);
+
     log_msg(E_DEBUG, "Create thread client fd:%d.", cinfo->fd);
     if(ret != 0)
     {
         free(cinfo);
         log_msg(E_ERROR, "Create pthread error!");
     }
+    else
+    {
+
+        /*
+         * add the client info to the list.
+         */
+        list_client_info_add(cinfo);
+    }
+
 
     log_msg(E_DEBUG, "Accept fd:%d. client:%s:%d", cinfo->fd, inet_ntoa(cinfo->sin.sin_addr), cinfo->sin.sin_port);
 }
@@ -65,7 +75,7 @@ static void sigint_cb(evutil_socket_t signal, short event, void *args)
 
 static void update_cb(evutil_socket_t signal, short event, void *args)
 {
-    list_node_t *np = NULL;
+    list_node_t        *np    = NULL;
     struct client_info *cinfo = NULL;
 
     for(np=gl_client_info.head; np; np=np->next)
@@ -80,7 +90,7 @@ static void update_cb(evutil_socket_t signal, short event, void *args)
  */
 void list_client_loopexit()
 {
-    list_node_t *np = NULL;
+    list_node_t        *np    = NULL;
     struct client_info *cinfo = NULL;
 
     pthread_mutex_lock(&gl_client_info.lock);
@@ -100,13 +110,12 @@ int main(int argc, char *argv[])
     struct event          *e_sigint  = NULL;
     struct event          *e_sigusr1 = NULL;
     struct event          *e_update  = NULL;
+    struct client_info    *cinfo     = NULL;
     struct evconnlistener *listener  = NULL;
     struct sockaddr_in    sin;
-    struct client_info *cinfo = NULL;
 
-    struct timeval tv = DEFAULT_UPDATE_TIME;
-
-    ev_uint16_t port = DEFAULT_SERVER_PORT;
+    struct timeval tv   = DEFAULT_UPDATE_TIME;
+    ev_uint16_t    port = DEFAULT_SERVER_PORT;
 
     /*
      * init the list
