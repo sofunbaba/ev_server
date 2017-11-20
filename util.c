@@ -25,7 +25,7 @@ static const int hex2bin_tbl[256] = {
 };
 
 /* Does the reverse of bin2hex but does not allocate any ram */
-bool hex2bin(unsigned char *p, const char *hexstr, size_t len)
+bool hex2bin(unsigned char *p, char *hexstr, size_t len)
 {
     int nibble1, nibble2;
     unsigned char idx;
@@ -72,7 +72,7 @@ void __bin2hex(char *s, const unsigned char *p, size_t len)
 /* Returns a malloced array string of a binary value of arbitrary length. The
  *  * array is rounded up to a 4 byte size to appease architectures that need
  *   * aligned array  sizes */
-char *bin2hex(const unsigned char *p, size_t len)
+char *bin2hex(unsigned char *p, size_t len)
 {
     ssize_t slen;
     char *s;

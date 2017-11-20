@@ -22,8 +22,8 @@ typedef unsigned char bool;
 
 
 
-bool hex2bin(unsigned char *p, const char *hexstr, size_t len);
-char *bin2hex(const unsigned char *p, size_t len);
+bool hex2bin(unsigned char *p, char *hexstr, size_t len);
+char *bin2hex(unsigned char *p, size_t len);
 
 
 

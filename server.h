@@ -11,6 +11,11 @@
 #define DEFAULT_SERVER_PORT 12345
 
 /*
+ * default update the client uptimes one time pre second.
+ */
+#define DEFAULT_UPDATE_TIME {1, 0}
+
+/*
  * print the message for defferent log level
  */
 #define log_msg(level, fmt, ...) do{ \
@@ -37,32 +42,14 @@ typedef enum {
 
 
 /*
- * the global event base list
- */
-extern struct list_head gl_event_base;
-
-/*
  * the global debug level flag.
  */
 extern DEBUG_LEVEL_E debug_level;
 
 /*
- * alloc a new event_base, and recorded with the global list.
+ * notify all the client for cleanning up the memory, and free the list.
  */
-struct event_base *list_event_base_new();
-
-/*
- * notify all the base loop for cleanning up the memory, and free the list.
- */
-void list_event_loopexit();
-
-/*
- * delete a event_base from the global list
- */
-void list_event_base_free(struct list_head *list, struct event_base *base);
-
-
-
+void list_client_loopexit();
 
 
 

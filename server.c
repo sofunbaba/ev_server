@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <assert.h>
 #include <unistd.h>
 #include <signal.h>
 #include <pthread.h>
@@ -19,90 +20,88 @@
  */
 DEBUG_LEVEL_E debug_level = E_DEBUG;
 
-/*
- * the global event base list
- */
-struct list_head gl_event_base;
-
 static void accept_error_cb(struct evconnlistener *listener, void *args)
 {
-    struct event_base *base = evconnlistener_get_base(listener);
     int err = EVUTIL_SOCKET_ERROR();
 
     log_msg(E_ERROR, "Got an error %d (%s) on the listener.", err, evutil_socket_error_to_string(err));
 
-    list_event_loopexit();
+    list_client_loopexit();
 }
 
 static void accept_conn_cb(struct evconnlistener *listener, evutil_socket_t fd, struct sockaddr * sock, int socklen, void *args)
 {
     ev_int8_t ret = 0;
-    pthread_t pt  = 0;
-    struct sockaddr_in *sin    = (struct sockaddr_in *)sock;
-    evutil_socket_t *client_fd = NULL;
+    struct client_info *cinfo = NULL;
 
-    log_msg(E_DEBUG, "Accept fd:%d. client:%s:%d", fd, inet_ntoa(sin->sin_addr), sin->sin_port);
 
-    client_fd  = (evutil_socket_t *)malloc(sizeof(evutil_socket_t));
-    *client_fd = fd;
-    ret = pthread_create(&pt, NULL, client_func, client_fd);
-    log_msg(E_DEBUG, "Create thread client fd:%d.", *client_fd);
+    cinfo = (struct client_info *)malloc(sizeof(struct client_info));
+    assert(cinfo != NULL);
+
+    cinfo->fd = fd;
+    memcpy((ev_uint8_t *)&cinfo->sin, (ev_uint8_t *)sock, sizeof(struct sockaddr_in));
+
+    ret = pthread_create(&cinfo->pt, NULL, client_func, (void *)cinfo);
+
+    log_msg(E_DEBUG, "Create thread client fd:%d.", cinfo->fd);
     if(ret != 0)
     {
-        free(client_fd);
+        free(cinfo);
         log_msg(E_ERROR, "Create pthread error!");
-        list_event_loopexit();
     }
+    else
+    {
+
+        /*
+         * add the client info to the list.
+         */
+        list_client_info_add(cinfo);
+    }
+
+    log_msg(E_DEBUG, "Accept fd:%d. client:%s:%d", cinfo->fd, inet_ntoa(cinfo->sin.sin_addr), cinfo->sin.sin_port);
 }
 
 static void sigint_cb(evutil_socket_t signal, short event, void *args)
 {
+    struct event_base *main_base = args;
+
     log_msg(E_INFO, "Catch the signal (%d).", signal);
 
-    list_event_loopexit();
+    /*
+     * main base loop exit.
+     */
+    event_base_loopexit(main_base, NULL);
+}
+
+static void update_cb(evutil_socket_t signal, short event, void *args)
+{
+    list_node_t        *np    = NULL;
+    struct client_info *cinfo = NULL;
+
+    for(np=gl_client_info.head; np; np=np->next)
+    {
+        cinfo = np->private_data;
+        cinfo->uptime++;
+    }
 }
 
 /*
  * notify all the base loop for cleanning up the memory, and free the list.
  */
-void list_event_loopexit()
+void list_client_loopexit()
 {
-    list_node_t *np = NULL;
+    list_node_t        *np    = NULL;
+    struct client_info *cinfo = NULL;
 
-    for(np=gl_event_base.head; np; np=np->next)
-        event_base_loopexit(np->private_data, NULL);
+    pthread_mutex_lock(&gl_client_info.lock);
+    for(np=gl_client_info.head; np; np=np->next)
+    {
+        cinfo = np->private_data;
+        event_base_loopexit(cinfo->base, NULL);
+    }
+    pthread_mutex_unlock(&gl_client_info.lock);
 
-    list_clear(&gl_event_base);
-
-    log_msg(E_DEBUG, "Free all memory and list.");
-}
-
-/*
- * alloc a new event_base, and recorded with the global list.
- */
-struct event_base *list_event_base_new()
-{
-    struct event_base *base = NULL;
-
-    base = event_base_new();
-    list_add(&gl_event_base, base);
-
-    log_msg(E_DEBUG, "New a event base loop.(cur:%u)",gl_event_base.length);
-
-    return base;
-}
-
-void list_event_base_free(struct list_head *list, struct event_base *base)
-{
-    list_node_t *np = NULL;
-
-    for(np=gl_event_base.head; np; np=np->next)
-        if(np->private_data == base)
-            list_del(&gl_event_base, np);
-
-    event_base_free(base);
-
-    log_msg(E_DEBUG, "Delete a evnet base.(remain:%d)", gl_event_base.length);
+    log_msg(E_DEBUG, "Notify all the base loop exit.");
 }
 
 int main(int argc, char *argv[])
@@ -110,15 +109,18 @@ int main(int argc, char *argv[])
     struct event_base     *base      = NULL;
     struct event          *e_sigint  = NULL;
     struct event          *e_sigusr1 = NULL;
+    struct event          *e_update  = NULL;
+    struct client_info    *cinfo     = NULL;
     struct evconnlistener *listener  = NULL;
     struct sockaddr_in    sin;
 
-    ev_uint16_t port = DEFAULT_SERVER_PORT;
+    struct timeval tv   = DEFAULT_UPDATE_TIME;
+    ev_uint16_t    port = DEFAULT_SERVER_PORT;
 
     /*
      * init the list
      */
-    list_head_init(&gl_event_base);
+    list_head_init(&gl_client_info);
 
     if(argc == 2)
         port = atoi(argv[1]);
@@ -131,10 +133,13 @@ int main(int argc, char *argv[])
 
     log_msg(E_INFO, "The server port: %d", port);
 
-    master_thread_init();
-
     evthread_use_pthreads();
-    base = list_event_base_new();
+    base = event_base_new();
+
+    /*
+     * init the master rx and tx thread.
+     */
+    master_thread_init(base);
 
     memset(&sin, 0, sizeof(sin));
     sin.sin_family = AF_INET;
@@ -153,25 +158,47 @@ int main(int argc, char *argv[])
     /*
      * catch the SIGINT signal to clean memory
      */
-    e_sigint = event_new(base, SIGINT, EV_SIGNAL, sigint_cb, NULL);
+    e_sigint = event_new(base, SIGINT, EV_SIGNAL, sigint_cb, base);
     event_add(e_sigint, NULL);
 
     /*
      * add the SIGUSR1 signal for kill cmd
      */
-    e_sigusr1 = event_new(base, SIGUSR1, EV_SIGNAL, sigint_cb, NULL);
+    e_sigusr1 = event_new(base, SIGUSR1, EV_SIGNAL, sigint_cb, base);
     event_add(e_sigusr1, NULL);
+
+    /*
+     * update the client uptime pre second.
+     */
+    e_update = event_new(base, -1, EV_TIMEOUT|EV_PERSIST, update_cb, NULL);
+    event_add(e_update, &tv);
 
     log_msg(E_INFO, "Server is running...");
 
     event_base_dispatch(base);
 
-    log_msg(E_INFO, "Server is shutting down...");
 
     evconnlistener_free(listener);
     event_free(e_sigint);
     event_free(e_sigusr1);
+    event_free(e_update);
     event_base_free(base);
+
+    /*
+     * notify other base loop exit.
+     */
+    list_client_loopexit();
+
+    /*
+     * wait for all thread exit.
+     */
+    while(gl_client_info.head)
+    {
+        cinfo = gl_client_info.head->private_data;
+        pthread_join(cinfo->pt, NULL);
+    }
+
+    log_msg(E_INFO, "Server is shutting down...");
     libevent_global_shutdown();
 
     return 0;
