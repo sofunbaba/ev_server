@@ -11,6 +11,11 @@
 #define DEFAULT_SERVER_PORT 12345
 
 /*
+ * default update the client uptimes one time pre second.
+ */
+#define DEFAULT_UPDATE_TIME {1, 0}
+
+/*
  * print the message for defferent log level
  */
 #define log_msg(level, fmt, ...) do{ \
@@ -20,7 +25,7 @@
                                             printf("\033[1m\033[31;40m"); \
                                         printf("[%s] "fmt, #level, ##__VA_ARGS__); \
                                         if(level == E_DEBUG) \
-                                            printf("%10s[%s:%s:%d] ", "-->", __FILE__,__func__, __LINE__); \
+                                            printf("%10s[%s: %s: %d] ", "--> ", __FILE__,__func__, __LINE__); \
                                         printf("\033[0m\r\n"); \
                                     } \
                                 }while(0)
@@ -32,13 +37,9 @@ typedef enum {
     E_ERROR,
     E_INFO,
     E_DEBUG,
+    E_ALL,
 }DEBUG_LEVEL_E;
 
-
-/*
- * the global event base list
- */
-extern struct list_head gl_event_base;
 
 /*
  * the global debug level flag.
@@ -46,22 +47,9 @@ extern struct list_head gl_event_base;
 extern DEBUG_LEVEL_E debug_level;
 
 /*
- * alloc a new event_base, and recorded with the global list.
+ * notify all the client for cleanning up the memory, and free the list.
  */
-struct event_base *list_event_base_new();
-
-/*
- * notify all the base loop for cleanning up the memory, and free the list.
- */
-void list_event_loopexit();
-
-/*
- * delete a event_base from the global list
- */
-void list_event_base_free(struct list_head *list, struct event_base *base);
-
-
-
+void list_client_loopexit();
 
 
 

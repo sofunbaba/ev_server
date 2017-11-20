@@ -3,7 +3,6 @@
 
 #include <pthread.h>
 
-
 typedef struct _list_node{
     void *private_data;
     struct _list_node *prev;
