@@ -20,7 +20,7 @@ struct list_head gl_client_info;
 /*
  * storge all the client output buffer
  */
-struct evbuffer *gl_client_out_buff[DEFAULT_CLIENT_CHANNELS][DEFAULT_CLIENT_CHIPS];
+struct chip_info gl_chip_info;
 
 /*
  * read task from the client,
@@ -33,47 +33,60 @@ void client_read_cb(struct bufferevent *bev, void *arg)
     size_t len = 0;
     ev_uint8_t channel = 0, chip = 0;
     struct evbuffer *input  = bufferevent_get_input(bev);
-    struct evbuffer *output = bufferevent_get_output(bev);
     evutil_socket_t fd      = bufferevent_getfd(bev);
 
-    /*
-     * read task that end with '\r\n' or '\r' or '\n'
-     */
-    task_str = evbuffer_readln(input, &len, EVBUFFER_EOL_ANY);
-    if(len > 0)
+    while(1)
     {
-        log_msg(E_DEBUG, "Client:%d got a message, len:%lu", fd, len);
-        log_msg(E_DEBUG, "recv:%s", task_str);
-
-        if(len == DEFAULT_TASK_RECV_LEN)
+        /*
+         * read task that end with '\r\n' or '\r' or '\n'
+         */
+        task_str = evbuffer_readln(input, &len, EVBUFFER_EOL_ANY);
+        if(len > 0)
         {
-            memset(task_bin, 0, sizeof(task_bin));
-            if(hex2bin((unsigned char *)task_bin, task_str, DEFAULT_TASK_HEAD_LEN) == false)
+            log_msg(E_DEBUG, "Client:%d got a message, len:%lu", fd, len);
+            log_msg(E_DEBUG, "recv:%s", task_str);
+
+            if(len == DEFAULT_TASK_RECV_LEN)
             {
-                log_msg(E_DEBUG, "Convert hex to bin error.");
-                goto _END;
-            }
+                memset(task_bin, 0, sizeof(task_bin));
+                if(hex2bin((unsigned char *)task_bin, task_str, DEFAULT_TASK_HEAD_LEN) == false)
+                    log_msg(E_DEBUG, "Convert hex to bin error.");
+                else if(task_bin[0] == DEFAULT_TASK_START)
+                {
+                    channel = task_bin[1];
+                    chip    = task_bin[2];
 
-            if(task_bin[0] == DEFAULT_TASK_START)
-            {
-                channel = task_bin[1];
-                chip    = task_bin[2];
+                    gl_chip_info.cinfo[channel][chip] = arg;
 
-                gl_client_out_buff[channel][chip] = output;
+                    log_msg(E_DEBUG, "channel:0x%02x, chip:0x%02x", channel, chip);
 
-                log_msg(E_DEBUG, "channel:0x%02x, chip:0x%02x", channel, chip);
-
-                evbuffer_add_printf(master_read_buff, "%s\r\n", task_str);
+                    evbuffer_add_printf(master_read_buff, "%s\r\n", task_str);
+                }
+                else
+                    log_msg(E_DEBUG, "Invalid task head.");
             }
             else
-                log_msg(E_DEBUG, "Invalid task head.");
+                log_msg(E_DEBUG, "Invalid task.");
+
+            free(task_str);
         }
         else
-            log_msg(E_DEBUG, "Invalid task.");
+            break;
+    }
+}
 
-_END:
-        free(task_str);
-   }
+static void chip_deactive(struct client_info *cinfo)
+{
+    ev_uint32_t channel=0, chip=0;
+
+    pthread_mutex_lock(&gl_chip_info.lock);
+
+    for(channel=0; channel<DEFAULT_CLIENT_CHANNELS; channel++)
+        for(chip=0; chip<DEFAULT_CLIENT_CHIPS; chip++)
+            if(gl_chip_info.cinfo[channel][chip] == cinfo)
+                gl_chip_info.cinfo[channel][chip] = NULL;
+
+    pthread_mutex_unlock(&gl_chip_info.lock);
 }
 
 void client_error_cb(struct bufferevent *bev, short what, void *arg)
@@ -86,6 +99,7 @@ void client_error_cb(struct bufferevent *bev, short what, void *arg)
     else if(what & BEV_EVENT_ERROR)
         log_msg(E_ERROR, "Client:%d got a error(%s).", cinfo->fd, evutil_socket_error_to_string(err));
 
+    chip_deactive(cinfo);
     event_base_loopexit(cinfo->base, NULL);
 }
 
@@ -97,6 +111,7 @@ void list_client_info_free(struct client_info *cinfo)
     for(np=gl_client_info.head; np; np=np->next)
         if(np->private_data == cinfo)
             list_del(&gl_client_info, np);
+    free(cinfo);
     pthread_mutex_unlock(&gl_client_info.lock);
 
     log_msg(E_DEBUG, "Delete a client.(remain:%d)", gl_client_info.length);

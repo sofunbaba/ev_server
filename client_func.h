@@ -11,6 +11,7 @@
 
 #define DEFAULT_TASK_RECV_LEN 108
 #define DEFAULT_TASK_BIN_LEN (DEFAULT_TASK_RECV_LEN/2)
+#define DEFAULT_TASK_SEND_LEN (DEFAULT_TASK_BIN_LEN-DEFAULT_TASK_HEAD_EXPAND)
 #define DEFAULT_TASK_HEAD_EXPAND 1
 #define DEFAULT_TASK_HEAD_LEN (5+DEFAULT_TASK_HEAD_EXPAND)
 #define DEFAULT_TASK_START 0x5a
@@ -25,12 +26,17 @@ struct client_info {
     struct event_base *base;
 };
 
+struct chip_info {
+    struct client_info *cinfo[DEFAULT_CLIENT_CHANNELS][DEFAULT_CLIENT_CHIPS];;
+    pthread_mutex_t lock;
+};
+
 /*
  * the global client info list.
  */
 extern struct list_head gl_client_info;
 
-extern struct evbuffer *gl_client_out_buff[DEFAULT_CLIENT_CHANNELS][DEFAULT_CLIENT_CHIPS];
+extern struct chip_info gl_chip_info;
 
 void *client_func(void *arg);
 void list_client_info_free(struct client_info *cinfo);

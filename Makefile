@@ -6,7 +6,7 @@ CROSS_COMPILE ?=
 CC = $(CROSS_COMPILE)gcc
 STRIP = $(CROSS_COMPILE)strip
 
-CFLAGS=-Wall
+CFLAGS=-Wall -g
 LDFLAGS=-L/usr/lib
 LIBS=-levent -levent_pthreads -lpthread
 
@@ -19,7 +19,7 @@ strip:
 	$(STRIP) $(TARGET)
 
 clean:
-	$(RM) $(TARGET)
+	$(RM) $(TARGET) core_*
 
 tags:
 	ctags -R *

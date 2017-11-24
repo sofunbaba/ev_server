@@ -18,15 +18,16 @@
 /*
  * the global debug level flag.
  */
-DEBUG_LEVEL_E debug_level = E_DEBUG;
+DEBUG_LEVEL_E debug_level = E_INFO;
 
 static void accept_error_cb(struct evconnlistener *listener, void *args)
 {
+    struct event_base *base = evconnlistener_get_base(listener);
     int err = EVUTIL_SOCKET_ERROR();
 
     log_msg(E_ERROR, "Got an error %d (%s) on the listener.", err, evutil_socket_error_to_string(err));
 
-    list_client_loopexit();
+    event_base_loopexit(base, NULL);
 }
 
 static void accept_conn_cb(struct evconnlistener *listener, evutil_socket_t fd, struct sockaddr * sock, int socklen, void *args)
@@ -43,11 +44,13 @@ static void accept_conn_cb(struct evconnlistener *listener, evutil_socket_t fd, 
 
     ret = pthread_create(&cinfo->pt, NULL, client_func, (void *)cinfo);
 
-    log_msg(E_DEBUG, "Create thread client fd:%d.", cinfo->fd);
     if(ret != 0)
     {
+        close(fd);
         free(cinfo);
-        log_msg(E_ERROR, "Create pthread error!");
+        log_msg(E_ERROR, "Create fd:%u pthread error %d!", fd, ret);
+
+        return;
     }
     else
     {
@@ -110,12 +113,22 @@ int main(int argc, char *argv[])
     struct event          *e_sigint  = NULL;
     struct event          *e_sigusr1 = NULL;
     struct event          *e_update  = NULL;
-    struct client_info    *cinfo     = NULL;
     struct evconnlistener *listener  = NULL;
     struct sockaddr_in    sin;
 
     struct timeval tv   = DEFAULT_UPDATE_TIME;
     ev_uint16_t    port = DEFAULT_SERVER_PORT;
+
+    evthread_use_pthreads();
+
+    /*
+     * init the master rx and tx thread.
+     */
+    if(master_thread_init() == false)
+    {
+        log_msg(E_ERROR, "Master thread init error!");
+        return -1;
+    }
 
     /*
      * init the list
@@ -133,13 +146,7 @@ int main(int argc, char *argv[])
 
     log_msg(E_INFO, "The server port: %d", port);
 
-    evthread_use_pthreads();
     base = event_base_new();
-
-    /*
-     * init the master rx and tx thread.
-     */
-    master_thread_init(base);
 
     memset(&sin, 0, sizeof(sin));
     sin.sin_family = AF_INET;
@@ -192,11 +199,7 @@ int main(int argc, char *argv[])
     /*
      * wait for all thread exit.
      */
-    while(gl_client_info.head)
-    {
-        cinfo = gl_client_info.head->private_data;
-        pthread_join(cinfo->pt, NULL);
-    }
+    while(gl_client_info.head);
 
     log_msg(E_INFO, "Server is shutting down...");
     libevent_global_shutdown();

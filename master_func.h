@@ -2,12 +2,15 @@
 #define _MASTER_FUNC_H_
 
 #include "master_func.h"
+#include "util.h"
+
+#define DEFAULT_MASTER_READ_THREAD 1
 
 
 extern struct evbuffer *master_read_buff;
 extern struct evbuffer *master_write_buff;
 
-void master_thread_init();
+bool master_thread_init();
 
 
 
