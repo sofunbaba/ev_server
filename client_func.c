@@ -99,7 +99,6 @@ void client_error_cb(struct bufferevent *bev, short what, void *arg)
     else if(what & BEV_EVENT_ERROR)
         log_msg(E_ERROR, "Client:%d got a error(%s).", cinfo->fd, evutil_socket_error_to_string(err));
 
-    chip_deactive(cinfo);
     event_base_loopexit(cinfo->base, NULL);
 }
 
@@ -144,6 +143,11 @@ void *client_func(void *arg)
     memset(cinfo->client_name, 0, sizeof(cinfo->client_name));
     cinfo->uptime = 0;
     event_base_dispatch(cinfo->base);
+
+    /*
+     * Notify that I had exited, and don't send any msg to me.
+     */
+    chip_deactive(cinfo);
 
     log_msg(E_DEBUG, "Thread client fd:%d exit!", cinfo->fd);
 
