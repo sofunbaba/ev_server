@@ -43,7 +43,7 @@ void client_read_cb(struct bufferevent *bev, void *arg)
         task_str = evbuffer_readln(input, &len, EVBUFFER_EOL_ANY);
         if(len > 0)
         {
-            log_msg(E_DEBUG, "Client:%d got a message, len:%lu", fd, len);
+            log_msg(E_DEBUG, "Client:%d got a message, len:%u", fd, len);
             log_msg(E_DEBUG, "recv:%s", task_str);
 
             if(len == DEFAULT_TASK_RECV_LEN)

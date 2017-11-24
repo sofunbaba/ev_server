@@ -10,6 +10,7 @@
 #include "master_func.h"
 #include "client_func.h"
 #include "util.h"
+#include "fpga_opt.h"
 
 struct evbuffer *master_read_buff;
 struct evbuffer *master_write_buff;
@@ -24,20 +25,17 @@ static void *master_read_func(void *arg)
     char *task_str = NULL;
     char task_bin[DEFAULT_TASK_BIN_LEN];
     ev_uint8_t channel = 0, chip = 0;
-    struct client_info *cinfo = NULL;
-    struct evbuffer *output = NULL;
 
     while(1)
     {
         task_str = evbuffer_readln(master_read_buff, &len, EVBUFFER_EOL_ANY);
         if(len > 0)
         {
-            log_msg(E_DEBUG, "Master read len:%lu", len);
+            log_msg(E_DEBUG, "Master read len:%u", len);
             log_msg(E_DEBUG, "task:%s", task_str);
 
             if(len == DEFAULT_TASK_RECV_LEN)
             {
-
                 memset(task_bin, 0, sizeof(task_bin));
                 if(hex2bin((unsigned char *)task_bin, task_str, DEFAULT_TASK_BIN_LEN) == false)
                     log_msg(E_DEBUG, "Convert hex to bin error.");
@@ -49,18 +47,9 @@ static void *master_read_func(void *arg)
 
                     log_msg(E_DEBUG, "channel:0x%02x, chip:0x%02x", channel, chip);
 
-                    pthread_mutex_lock(&gl_chip_info.lock);
+                    if(fpga_send_pkg(channel, (unsigned char *)&task_bin[1],DEFAULT_TASK_SEND_LEN) == false)
+                        log_msg(E_ERROR, "Send task to fpga error.");
 
-                    cinfo = gl_chip_info.cinfo[channel][chip];
-                    if(cinfo != NULL)
-                    {
-                        output = bufferevent_get_output(cinfo->bev);
-                        evbuffer_add(output, &task_bin[1], DEFAULT_TASK_SEND_LEN);
-                    }
-                    else
-                        log_msg(E_ERROR, "Client had exited, clear the invalid task.");
-
-                    pthread_mutex_unlock(&gl_chip_info.lock);
                 }
             }
             else
@@ -75,9 +64,39 @@ static void *master_read_func(void *arg)
 
 static void *master_write_func(void *arg)
 {
+    int len = 0;
+    unsigned int channel=0, chip=0;
+    char *buff_str = NULL;
+    unsigned char buff_bin[DEFAULT_TASK_BIN_LEN];
+    struct client_info *cinfo = NULL;
+    struct evbuffer *output= NULL;
+
     while(1)
     {
-        sleep(1);
+        for(channel=0; channel<DEFAULT_CLIENT_CHANNELS; channel++)
+        {
+            memset(buff_bin, 0 ,sizeof(buff_bin));
+            if(fpga_read_pkg(buff_bin, channel, &len) == true)
+            {
+                chip = buff_bin[1];
+                buff_str = bin2hex(buff_bin, len);
+
+                log_msg(E_DEBUG, "Master read fpga channel:0x%x, chip:0x%x", channel, chip);
+
+                pthread_mutex_lock(&gl_chip_info.lock);
+
+                cinfo = gl_chip_info.cinfo[channel][chip];
+                if(cinfo != NULL)
+                {
+                    output = bufferevent_get_output(cinfo->bev);
+                    evbuffer_add_printf(output, "%02x%02x%s\r\n",buff_bin[0], channel, &buff_str[2]);
+                }
+
+                pthread_mutex_unlock(&gl_chip_info.lock);
+
+                free(buff_str);
+            }
+        }
     }
 
     return NULL;

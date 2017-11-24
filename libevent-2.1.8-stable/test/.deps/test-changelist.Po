@@ -1,0 +1,221 @@
+test/test-changelist.o: test/test-changelist.c \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/stdc-predef.h \
+ include/event2/event-config.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/unistd.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/features.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/sys/cdefs.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/wordsize.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/gnu/stubs.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/gnu/stubs-hard.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/posix_opt.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/environments.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/types.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/typesizes.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/lib/gcc/arm-linux-gnueabihf/5.4.1/include/stddef.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/confname.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/getopt.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/sys/types.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/time.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/pthreadtypes.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/endian.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/endian.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/sys/stat.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/stat.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/sys/time.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/time.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/sys/select.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/select.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/sigset.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/sys/socket.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/sys/uio.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/uio.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/socket.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/socket_type.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/sockaddr.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/asm/socket.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/asm-generic/socket.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/asm/sockios.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/asm-generic/sockios.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/fcntl.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/fcntl.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/fcntl-linux.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/stdlib.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/waitflags.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/waitstatus.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/stdlib-bsearch.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/stdlib-float.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/stdio.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/libio.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/_G_config.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/wchar.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/lib/gcc/arm-linux-gnueabihf/5.4.1/include/stdarg.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/stdio_lim.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/sys_errlist.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/stdio.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/string.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/string.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/string2.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/errno.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/errno.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/linux/errno.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/asm/errno.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/asm-generic/errno.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/asm-generic/errno-base.h \
+ include/event2/event.h include/event2/visibility.h include/event2/util.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/lib/gcc/arm-linux-gnueabihf/5.4.1/include/stdint.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/stdint.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/wchar.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/netdb.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/netinet/in.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/in.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/byteswap.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/byteswap-16.h \
+ /opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/netdb.h
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/stdc-predef.h:
+
+include/event2/event-config.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/unistd.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/features.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/sys/cdefs.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/wordsize.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/gnu/stubs.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/gnu/stubs-hard.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/posix_opt.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/environments.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/types.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/typesizes.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/lib/gcc/arm-linux-gnueabihf/5.4.1/include/stddef.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/confname.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/getopt.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/sys/types.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/time.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/pthreadtypes.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/endian.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/endian.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/sys/stat.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/stat.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/sys/time.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/time.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/sys/select.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/select.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/sigset.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/sys/socket.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/sys/uio.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/uio.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/socket.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/socket_type.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/sockaddr.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/asm/socket.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/asm-generic/socket.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/asm/sockios.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/asm-generic/sockios.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/fcntl.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/fcntl.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/fcntl-linux.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/stdlib.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/waitflags.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/waitstatus.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/stdlib-bsearch.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/stdlib-float.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/stdio.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/libio.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/_G_config.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/wchar.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/lib/gcc/arm-linux-gnueabihf/5.4.1/include/stdarg.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/stdio_lim.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/sys_errlist.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/stdio.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/string.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/string.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/string2.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/errno.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/errno.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/linux/errno.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/asm/errno.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/asm-generic/errno.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/asm-generic/errno-base.h:
+
+include/event2/event.h:
+
+include/event2/visibility.h:
+
+include/event2/util.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/lib/gcc/arm-linux-gnueabihf/5.4.1/include/stdint.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/stdint.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/wchar.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/netdb.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/netinet/in.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/in.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/byteswap.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/byteswap-16.h:
+
+/opt/gcc-linaro-5.4.1-2017.01-i686_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/bits/netdb.h:

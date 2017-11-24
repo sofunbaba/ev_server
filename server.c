@@ -14,6 +14,7 @@
 #include "list.h"
 #include "client_func.h"
 #include "master_func.h"
+#include "fpga_opt.h"
 
 /*
  * the global debug level flag.
@@ -67,7 +68,7 @@ static void accept_conn_cb(struct evconnlistener *listener, evutil_socket_t fd, 
         gl_total_history_client++;
     }
 
-    log_msg(E_DEBUG, "Accept num:%lu, fd:%d. client:%s:%d", cinfo->num, cinfo->fd, inet_ntoa(cinfo->sin.sin_addr), cinfo->sin.sin_port);
+    log_msg(E_DEBUG, "Accept num:%llu, fd:%d. client:%s:%d", cinfo->num, cinfo->fd, inet_ntoa(cinfo->sin.sin_addr), cinfo->sin.sin_port);
 }
 
 static void sigint_cb(evutil_socket_t signal, short event, void *args)
@@ -125,7 +126,24 @@ int main(int argc, char *argv[])
     struct timeval tv   = DEFAULT_UPDATE_TIME;
     ev_uint16_t    port = DEFAULT_SERVER_PORT;
 
+    if(argc == 2)
+        port = atoi(argv[1]);
+
+    if(port < 1000 || port > EV_UINT16_MAX)
+    {
+        log_msg(E_ERROR, "Invalid port!");
+        return 1;
+    }
+
+    log_msg(E_INFO, "The server port: %d", port);
+
     evthread_use_pthreads();
+
+    if(fpga_init() == false)
+    {
+        log_msg(E_ERROR, "FPGA init error.");
+        return -1;
+    }
 
     /*
      * init the master rx and tx thread.
@@ -140,17 +158,6 @@ int main(int argc, char *argv[])
      * init the list
      */
     list_head_init(&gl_client_info);
-
-    if(argc == 2)
-        port = atoi(argv[1]);
-
-    if(port < 1000 || port > EV_UINT16_MAX)
-    {
-        log_msg(E_ERROR, "Invalid port!");
-        return 1;
-    }
-
-    log_msg(E_INFO, "The server port: %d", port);
 
     base = event_base_new();
 
@@ -189,7 +196,6 @@ int main(int argc, char *argv[])
     log_msg(E_INFO, "Server is running...");
 
     event_base_dispatch(base);
-
 
     evconnlistener_free(listener);
     event_free(e_sigint);
