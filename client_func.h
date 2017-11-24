@@ -24,6 +24,7 @@ struct client_info {
     struct bufferevent *bev;
     struct sockaddr_in sin;
     struct event_base *base;
+    ev_uint64_t num;
 };
 
 struct chip_info {

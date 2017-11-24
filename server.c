@@ -20,6 +20,8 @@
  */
 DEBUG_LEVEL_E debug_level = E_INFO;
 
+static ev_uint64_t gl_total_history_client = 0;
+
 static void accept_error_cb(struct evconnlistener *listener, void *args)
 {
     struct event_base *base = evconnlistener_get_base(listener);
@@ -38,8 +40,10 @@ static void accept_conn_cb(struct evconnlistener *listener, evutil_socket_t fd, 
 
     cinfo = (struct client_info *)malloc(sizeof(struct client_info));
     assert(cinfo != NULL);
+    memset(cinfo, 0, sizeof(struct client_info));
 
     cinfo->fd = fd;
+    cinfo->num = gl_total_history_client;
     memcpy((ev_uint8_t *)&cinfo->sin, (ev_uint8_t *)sock, sizeof(struct sockaddr_in));
 
     ret = pthread_create(&cinfo->pt, NULL, client_func, (void *)cinfo);
@@ -59,9 +63,11 @@ static void accept_conn_cb(struct evconnlistener *listener, evutil_socket_t fd, 
          * add the client info to the list.
          */
         list_client_info_add(cinfo);
+
+        gl_total_history_client++;
     }
 
-    log_msg(E_DEBUG, "Accept fd:%d. client:%s:%d", cinfo->fd, inet_ntoa(cinfo->sin.sin_addr), cinfo->sin.sin_port);
+    log_msg(E_DEBUG, "Accept num:%lu, fd:%d. client:%s:%d", cinfo->num, cinfo->fd, inet_ntoa(cinfo->sin.sin_addr), cinfo->sin.sin_port);
 }
 
 static void sigint_cb(evutil_socket_t signal, short event, void *args)

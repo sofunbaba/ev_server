@@ -83,7 +83,7 @@ static void chip_deactive(struct client_info *cinfo)
 
     for(channel=0; channel<DEFAULT_CLIENT_CHANNELS; channel++)
         for(chip=0; chip<DEFAULT_CLIENT_CHIPS; chip++)
-            if(gl_chip_info.cinfo[channel][chip] == cinfo)
+            if(gl_chip_info.cinfo[channel][chip] && (gl_chip_info.cinfo[channel][chip]->num==cinfo->num))
                 gl_chip_info.cinfo[channel][chip] = NULL;
 
     pthread_mutex_unlock(&gl_chip_info.lock);
@@ -109,7 +109,7 @@ void list_client_info_free(struct client_info *cinfo)
 
     pthread_mutex_lock(&gl_client_info.lock);
     for(np=gl_client_info.head; np; np=np->next)
-        if(np->private_data == cinfo)
+        if(((struct client_info *)np->private_data)->num == cinfo->num)
             list_del(&gl_client_info, np);
     free(cinfo);
     pthread_mutex_unlock(&gl_client_info.lock);
