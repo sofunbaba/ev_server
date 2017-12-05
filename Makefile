@@ -5,13 +5,12 @@ SRC=$(wildcard src/*.c) $(wildcard libs/ccan/*.c) $(wildcard libs/jansson/*.c)
 
 ARM_GCC_HOME=/opt/gcc-linaro-5.4.1
 LIBEVENT=libs/libevent-2.1.8-stable
-# CROSS_COMPILE ?= $(ARM_GCC_HOME)/bin/arm-linux-gnueabihf-
-CROSS_COMPILE ?=
+CROSS_COMPILE ?= $(ARM_GCC_HOME)/bin/arm-linux-gnueabihf-
 
 export CC = $(CROSS_COMPILE)gcc
 export STRIP = $(CROSS_COMPILE)strip
 
-CFLAGS=-Wall -I$(LIBEVENT)/include -I$(LIBJANSSON)/src -I$(LIBJANSSON)/include -Ilibs/ccan -Ilibs/jansson -I.
+CFLAGS=-I$(LIBEVENT)/include -I$(LIBJANSSON)/src -I$(LIBJANSSON)/include -Ilibs/ccan -Ilibs/jansson -I. -g
 LDFLAGS=-L$(LIBEVENT)/.libs
 LIBS=-levent -levent_pthreads -lpthread
 

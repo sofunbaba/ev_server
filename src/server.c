@@ -131,6 +131,8 @@ static struct opt_table opt_cmdline_table[] = {
 
     OPT_WITH_ARG("--port|-p", opt_set_uintval, NULL, &opt_port, "Set the server port."),
 
+    OPT_WITH_ARG("--debug|-d", opt_set_uintval, NULL, &debug_level, "Set debug level (0:ERROR, 1:INFO, 2:DEBUG, 3:ALL)."),
+
     OPT_ENDTABLE
 };
 
@@ -151,6 +153,8 @@ int main(int argc, char *argv[])
     struct sockaddr_in    sin;
 
     struct timeval tv   = DEFAULT_UPDATE_TIME;
+
+    signal(SIGPIPE,SIG_IGN);
 
     /*
      * parse the cmd args.

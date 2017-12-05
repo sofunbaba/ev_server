@@ -7,7 +7,7 @@
 
 
 #define DEFAULT_CLIENT_CHANNELS 6
-#define DEFAULT_CLIENT_CHIPS    96
+#define DEFAULT_CLIENT_CHIPS    35+1
 
 #define DEFAULT_TASK_RECV_LEN 108
 #define DEFAULT_TASK_BIN_LEN (DEFAULT_TASK_RECV_LEN/2)
@@ -25,10 +25,11 @@ struct client_info {
     struct sockaddr_in sin;
     struct event_base *base;
     ev_uint64_t num;
+    struct timeval recv_time;
 };
 
 struct chip_info {
-    struct client_info *cinfo[DEFAULT_CLIENT_CHANNELS][DEFAULT_CLIENT_CHIPS];;
+    struct client_info *cinfo[DEFAULT_CLIENT_CHANNELS][DEFAULT_CLIENT_CHIPS];
     pthread_mutex_t lock;
 };
 

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <unistd.h>
+#include <time.h>
 #include <event2/event.h>
 #include <event2/util.h>
 #include <event2/buffer.h>
@@ -10,6 +11,7 @@
 #include "server.h"
 #include "client_func.h"
 #include "master_func.h"
+#include "fpga_opt.h"
 #include "util.h"
 
 /*
@@ -43,24 +45,34 @@ void client_read_cb(struct bufferevent *bev, void *arg)
         task_str = evbuffer_readln(input, &len, EVBUFFER_EOL_ANY);
         if(len > 0)
         {
-            log_msg(E_DEBUG, "Client:%d got a message, len:%u", fd, len);
-            log_msg(E_DEBUG, "recv:%s", task_str);
+            // log_msg(E_DEBUG, "Client:%d got a message, len:%u", fd, len);
+            // log_msg(E_DEBUG, "recv:%s", task_str);
 
             if(len == DEFAULT_TASK_RECV_LEN)
             {
                 memset(task_bin, 0, sizeof(task_bin));
-                if(hex2bin((unsigned char *)task_bin, task_str, DEFAULT_TASK_HEAD_LEN) == false)
+                if(hex2bin((unsigned char *)task_bin, task_str, DEFAULT_TASK_BIN_LEN) == false)
                     log_msg(E_DEBUG, "Convert hex to bin error.");
                 else if(task_bin[0] == DEFAULT_TASK_START)
                 {
-                    channel = task_bin[1];
-                    chip    = task_bin[2];
-
-                    gl_chip_info.cinfo[channel][chip] = arg;
+                    channel     = task_bin[1];
+                    chip        = task_bin[2];
+                    task_bin[1] = task_bin[0];
 
                     log_msg(E_DEBUG, "channel:0x%02x, chip:0x%02x", channel, chip);
+                    if((channel<DEFAULT_CLIENT_CHANNELS) && (chip<DEFAULT_CLIENT_CHIPS))
+                    {
+                        gl_chip_info.cinfo[channel][chip] = arg;
 
-                    evbuffer_add_printf(master_read_buff, "%s\r\n", task_str);
+                        gettimeofday(&gl_chip_info.cinfo[channel][chip]->recv_time, NULL);
+
+                        if(fpga_send_pkg(channel, (unsigned char *)&task_bin[1], DEFAULT_TASK_SEND_LEN) == false)
+                            log_msg(E_ERROR, "Send task to fpga error.");
+
+                        // evbuffer_add_printf(master_read_buff, "%s\r\n", task_str);
+                    }
+                    else
+                        log_msg(E_ERROR, "Recv invalid channel or chip num.");
                 }
                 else
                     log_msg(E_DEBUG, "Invalid task head.");
@@ -97,7 +109,9 @@ void client_error_cb(struct bufferevent *bev, short what, void *arg)
     if(what & BEV_EVENT_EOF)
         log_msg(E_DEBUG, "Client:%d exit.", cinfo->fd);
     else if(what & BEV_EVENT_ERROR)
+    {
         log_msg(E_ERROR, "Client:%d got a error(%s).", cinfo->fd, evutil_socket_error_to_string(err));
+    }
 
     event_base_loopexit(cinfo->base, NULL);
 }
@@ -133,9 +147,11 @@ void *client_func(void *arg)
 
     cinfo->base = event_base_new();
 
+    evutil_make_socket_nonblocking(cinfo->fd);
+
     cinfo->bev = bufferevent_socket_new(cinfo->base, cinfo->fd, BEV_OPT_CLOSE_ON_FREE);
     bufferevent_setcb(cinfo->bev, client_read_cb, NULL, client_error_cb, cinfo);
-    bufferevent_enable(cinfo->bev, EV_READ);
+    bufferevent_enable(cinfo->bev, EV_READ|EV_PERSIST);
 
     /*
      * fill the client info.

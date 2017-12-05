@@ -4,7 +4,7 @@
 #include "master_func.h"
 #include "util.h"
 
-#define DEFAULT_MASTER_READ_THREAD 1
+#define DEFAULT_MASTER_READ_THREAD 2
 
 
 extern struct evbuffer *master_read_buff;

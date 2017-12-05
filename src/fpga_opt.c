@@ -26,13 +26,6 @@ bool fpga_init()
         return false;
     }
 
-    system("echo 926 > /sys/class/gpio/export");
-    system("echo 938 > /sys/class/gpio/export");
-    system("echo out > /sys/class/gpio/gpio926/direction");
-    system("echo out > /sys/class/gpio/gpio938/direction");
-    system("echo 0 > /sys/class/gpio/gpio938/value");
-    system("echo 0 > /sys/class/gpio/gpio926/value");
-
     pthread_mutex_init(&g_fpga_base_lock, NULL);
 
     return true;
@@ -105,7 +98,7 @@ int fpga_send_pkg(unsigned char channel,uint8_t *buf,int len)
     {
         rdlen = fpga_mem_opt(FPGA_OPT_RD, FPGA_TASK_END_REG, FPGA_READ_LEN, 0);
         if(FPGA_HAS_DATA(rdlen))
-            usleep(50000);
+            usleep(100);
         else
             break;
     }
